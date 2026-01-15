@@ -1,21 +1,28 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Scan Attendance QR') }}</div>
+<div class="container py-4">
+    <div class="row justify-content-center animate-fade-in">
+        <div class="col-md-8 text-center">
+            <h2 class="fw-bold mb-4">{{ __('Scan Kehadiran') }}</h2>
+            
+            <div class="glass-card p-4 border-0 shadow-lg">
+                <div id="reader" style="width: 100%; max-width: 500px; margin: 0 auto; overflow: hidden; border-radius: 1rem;"></div>
+                
+                <div class="mt-4 p-3 bg-soft-info rounded-3">
+                    <i class="bi bi-info-circle text-info me-2"></i>
+                    <span class="text-dark small">{{ __('Arahkan kamera ke QR Code dosen dengan jelas.') }}</span>
+                </div>
 
-                <div class="card-body text-center">
-                    <div id="reader" style="width: 100%; max-width: 500px; margin: 0 auto;"></div>
-                    
-                    <form id="attendance-form" action="{{ route('student.attendance.store') }}" method="POST" class="d-none">
-                        @csrf
-                        <input type="hidden" name="qr_token" id="qr_token">
-                    </form>
+                <form id="attendance-form" action="{{ route('student.attendance.store') }}" method="POST" class="d-none">
+                    @csrf
+                    <input type="hidden" name="qr_token" id="qr_token">
+                </form>
 
-                    <p class="mt-3">Please point your camera at the QR code displayed by the lecturer.</p>
+                <div class="mt-4">
+                    <a href="{{ route('student.dashboard') }}" class="btn btn-link text-muted">
+                        <i class="bi bi-arrow-left me-1"></i>{{ __('Kembali ke Dashboard') }}
+                    </a>
                 </div>
             </div>
         </div>
@@ -25,9 +32,6 @@
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <script>
     function onScanSuccess(decodedText, decodedResult) {
-        // Handle the scanned code as you like, for example:
-        console.log(`Code matched = ${decodedText}`, decodedResult);
-        
         // Stop scanning
         html5QrcodeScanner.clear();
 
@@ -37,14 +41,28 @@
     }
 
     function onScanFailure(error) {
-        // handle scan failure, usually better to ignore and keep scanning.
-        // console.warn(`Code scan error = ${error}`);
+        // handle scan failure
     }
 
     let html5QrcodeScanner = new Html5QrcodeScanner(
         "reader",
-        { fps: 10, qrbox: {width: 250, height: 250} },
+        { fps: 15, qrbox: {width: 280, height: 280} },
         /* verbose= */ false);
     html5QrcodeScanner.render(onScanSuccess, onScanFailure);
 </script>
+
+<style>
+    #reader__dashboard_section_csr button {
+        background-color: var(--primary-color) !important;
+        color: white !important;
+        border: none !important;
+        padding: 8px 20px !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        margin-top: 10px !important;
+    }
+    #reader video {
+        border-radius: 1rem !important;
+    }
+</style>
 @endsection

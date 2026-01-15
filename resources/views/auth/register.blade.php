@@ -31,10 +31,10 @@
                             <label for="role" class="col-md-4 col-form-label text-md-end">{{ __('Role') }}</label>
                             <div class="col-md-6">
                                 <select id="role" class="form-control @error('role') is-invalid @enderror" name="role" required>
-                                    <option value="student">Student</option>
-                                    <option value="lecturer">Lecturer</option>
-                                    <!-- Admin registration usually restricted, but allowed here for demo -->
-                                    <option value="admin">Admin</option>
+                                    <option value="student">{{ __('Student') }}</option>
+                                    <option value="lecturer">{{ __('Lecturer') }}</option>
+                                    <!-- Admin registration biasanya dibatasi, tapi diizinkan di sini untuk demo -->
+                                    <option value="admin">{{ __('Admin') }}</option>
                                 </select>
                             </div>
                         </div>

@@ -20,7 +20,7 @@ class Attendance extends Model
         'scanned_at' => 'datetime',
     ];
 
-    public function session()
+    public function attendanceSession()
     {
         return $this->belongsTo(AttendanceSession::class, 'attendance_session_id');
     }

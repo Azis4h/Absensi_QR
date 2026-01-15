@@ -11,7 +11,17 @@ class StudentController extends Controller
 {
     public function dashboard()
     {
-        return view('student.dashboard');
+        $student = Auth::user()->student;
+
+        if (!$student) {
+            return view('student.no_profile');
+        }
+        $attendances = \App\Models\Attendance::where('student_id', $student->id)
+            ->with('attendanceSession.schedule.course')
+            ->orderBy('scanned_at', 'desc')
+            ->get();
+
+        return view('student.dashboard', compact('attendances'));
     }
 
     public function scan()
@@ -28,11 +38,11 @@ class StudentController extends Controller
         $session = AttendanceSession::where('qr_code', $request->qr_token)->first();
 
         if (!$session) {
-            return back()->withErrors(['qr_token' => 'Invalid QR Code']);
+            return back()->withErrors(['qr_token' => __('Invalid or expired QR code.')]);
         }
 
         if (!$session->is_active || now()->greaterThan($session->expires_at)) {
-            return back()->withErrors(['qr_token' => 'Session is closed or expired']);
+            return back()->withErrors(['qr_token' => __('Invalid or expired QR code.')]);
         }
 
         // Check if already attended
@@ -41,7 +51,7 @@ class StudentController extends Controller
             ->first();
 
         if ($existing) {
-            return redirect()->route('student.dashboard')->with('info', 'You have already attended this session.');
+            return redirect()->route('student.dashboard')->with('info', __('You have already recorded your attendance for this session.'));
         }
 
         Attendance::create([
@@ -51,6 +61,6 @@ class StudentController extends Controller
             'status' => 'present',
         ]);
 
-        return redirect()->route('student.dashboard')->with('success', 'Attendance recorded successfully!');
+        return redirect()->route('student.dashboard')->with('success', __('Attendance recorded successfully.'));
     }
 }
