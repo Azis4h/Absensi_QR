@@ -18,7 +18,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Admin
+        // 1. Create Data Utama (Specific Accounts)
+        
+        // Admin
         User::create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
@@ -26,33 +28,55 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        // Create Lecturer
+        // Specific Lecturer
         $lecturerUser = User::create([
             'name' => 'Lecturer User',
             'email' => 'lecturer@example.com',
             'password' => Hash::make('password'),
             'role' => 'lecturer',
         ]);
-
-        Lecturer::create([
+        $specificLecturer = Lecturer::create([
             'user_id' => $lecturerUser->id,
             'nip' => '123456789',
             'department' => 'Informatika',
         ]);
 
-        // Create Student
+        // Specific Student
         $studentUser = User::create([
             'name' => 'Student User',
             'email' => 'student@example.com',
             'password' => Hash::make('password'),
             'role' => 'student',
         ]);
-
         Student::create([
             'user_id' => $studentUser->id,
             'nim' => '20210001',
             'major' => 'Teknik Informatika',
             'class_year' => '2021',
         ]);
+
+
+        // 2. Generate Dummy Data using Factories
+
+        // Create 10 Courses
+        $courses = \App\Models\Course::factory(10)->create();
+
+        // Create 5 Additional Lecturers
+        $lecturers = \App\Models\Lecturer::factory(5)->create();
+
+        // Create 20 Additional Students
+        \App\Models\Student::factory(20)->create();
+        
+        // Include the specific lecturer in the pool for scheduling
+        $allLecturers = $lecturers->push($specificLecturer);
+
+        // Create Schedules
+        // For each course, create 1-2 schedules with random lecturers
+        foreach ($courses as $course) {
+            \App\Models\Schedule::factory(rand(1, 2))->create([
+                'course_id' => $course->id,
+                'lecturer_id' => $allLecturers->random()->id,
+            ]);
+        }
     }
 }
