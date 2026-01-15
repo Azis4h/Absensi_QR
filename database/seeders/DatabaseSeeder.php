@@ -78,5 +78,17 @@ class DatabaseSeeder extends Seeder
                 'lecturer_id' => $allLecturers->random()->id,
             ]);
         }
+        
+        // 3. Enrollment (KRS)
+        // Enroll specific student to all courses for easier testing
+        $specificStudent = \App\Models\Student::where('user_id', $studentUser->id)->first();
+        $specificStudent->courses()->attach($courses);
+
+        // Enroll other students to random 3-5 courses
+        $allStudents = \App\Models\Student::all();
+        foreach ($allStudents as $student) {
+            if($student->id === $specificStudent->id) continue;
+            $student->courses()->attach($courses->random(rand(3, 5)));
+        }
     }
 }

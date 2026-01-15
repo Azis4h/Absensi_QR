@@ -15,6 +15,11 @@ class Course extends Model
         'credits',
     ];
 
+    public function students()
+    {
+        return $this->belongsToMany(Student::class);
+    }
+
     public function schedules()
     {
         return $this->hasMany(Schedule::class);

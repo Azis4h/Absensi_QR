@@ -45,6 +45,14 @@ class StudentController extends Controller
             return back()->withErrors(['qr_token' => __('Invalid or expired QR code.')]);
         }
 
+        // Check Enrollment (KRS)
+        $student = Auth::user()->student;
+        $courseId = $session->schedule->course_id;
+        
+        if (!$student->courses()->where('course_id', $courseId)->exists()) {
+             return redirect()->route('student.dashboard')->with('error', __('Anda tidak terdaftar di mata kuliah ini (KRS).'));
+        }
+
         // Check if already attended
         $existing = Attendance::where('attendance_session_id', $session->id)
             ->where('student_id', Auth::user()->student->id)
